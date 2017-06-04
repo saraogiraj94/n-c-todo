@@ -4,7 +4,8 @@ var mongoose=require('mongoose');
 mongoose.Promise=global.Promise;
 
 //Connecting with the mongoose database
-mongoose.connect("mongodb://raj:raj@ds157641.mlab.com:57641/todo");
+//mongoose.connect("mongodb://raj:raj@ds157641.mlab.com:57641/todo");
+mongoose.connect("mongodb://localhost:27017/TodoApi");
 
 module.exports={
     mongoose

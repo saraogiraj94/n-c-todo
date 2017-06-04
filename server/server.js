@@ -1,9 +1,11 @@
 var express=require('express');
 var bodyParser=require('body-parser');
+var _ = require('lodash');
 
 var {mongoose}=require('./db/mongoose');
 var {Todo}=require('./models/Todos');
 var {User}=require('./models/Users');
+var {authenticate}=require('./middleware/authenticate');
 
 const port=process.env.PORT||3000;
 
@@ -27,6 +29,7 @@ app.post('/todos',(req,res)=>{
         res.status(400).send(err);
     });  
 });
+
 
 app.get('/todos',(req,res)=>{
     Todo.find().then((todos)=>{
@@ -57,6 +60,31 @@ app.get('/todo/:id',(req,res)=>{
 
 });
 
-app.listen(port,()=>{   
-    console.log(`Listening at port ${port}`);
+//User Routes
+
+
+app.post('/users',(req,res)=>{
+    var body=_.pick(req.body,['email','password']);
+  var user = new User(body);
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch((e) => {
+    res.status(400).send(e);
+  })
 });
+
+
+
+
+app.get('/users/me',authenticate,(req,res)=>{
+   res.send(req.user); 
+});
+  
+app.listen(port, () => {
+  console.log(`Started up at port ${port}`);
+});
+
+module.exports = {app}
