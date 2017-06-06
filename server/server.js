@@ -65,7 +65,7 @@ app.get('/todo/:id',(req,res)=>{
 
 app.post('/users',(req,res)=>{
     var body=_.pick(req.body,['email','password']);
-  var user = new User(body);
+    var user = new User(body);
 
   user.save().then(() => {
     return user.generateAuthToken();
@@ -77,12 +77,31 @@ app.post('/users',(req,res)=>{
 });
 
 
-
-
 app.get('/users/me',authenticate,(req,res)=>{
    res.send(req.user); 
 });
-  
+
+//User Login Route
+app.post('/users/login',(req,res)=>{
+    var body=_.pick(req.body,['email','password']);
+
+    User.findByCredentials(body.email,body.password).then((user)=>{
+      // return res.send(user);
+    //Now we will generate new token
+        return user.generateAuthToken().then((token)=>{
+            return res.header('x-auth',token).send(user);
+        });
+  }).catch((err)=>{
+        res.status(401).send(err);
+    });
+});
+
+
+//Logout API
+app.delete('/users/me/token',authenticate,(req,res)=>{
+    
+});
+
 app.listen(port, () => {
   console.log(`Started up at port ${port}`);
 });
