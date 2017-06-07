@@ -90,7 +90,7 @@ app.post('/users/login',(req,res)=>{
     //Now we will generate new token
         return user.generateAuthToken().then((token)=>{
             return res.header('x-auth',token).send(user);
-        });
+        }); 
   }).catch((err)=>{
         res.status(401).send(err);
     });
